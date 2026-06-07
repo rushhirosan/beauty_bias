@@ -9,12 +9,10 @@ type: tech
 
 YouCam 肌分析 API（Skin Analysis）は、1回の解析で **2種類の点数** を同時に返します。
 
-
-| フィールド           | 意味                  |
-| --------------- | ------------------- |
-| `**raw_score`** | API が内部で計算した測定値（小数） |
-| `**ui_score**`  | 画面に出す用に調整した点数（整数）   |
-
+| フィールド | 意味 |
+| --- | --- |
+| **raw_score** | API が内部で計算した測定値（小数） |
+| **ui_score** | 画面に出す用に調整した点数（整数） |
 
 公式ドキュメントは `ui_score` について、こう書いています。
 
@@ -22,7 +20,7 @@ YouCam 肌分析 API（Skin Analysis）は、1回の解析で **2種類の点数
 
 要するに **意図的な調整** です。バグでも、四捨五入の誤差でもありません。
 
-この仕組みを自分の顔で確かめる Web アプリ **[Beauty Bias Lab](https://github.com/YOUR_USER/beauty_bias)** を Next.js で作りました。触って分かったのは、**「どこにシワ・毛穴があるか」の分析結果は共通で、変わるのは点数だけ** という点です。
+この仕組みを自分の顔で確かめる Web アプリ **[Beauty Bias Lab](https://beauty-bias-lab.vercel.app/)** を Next.js で作りました。触って分かったのは、**「どこにシワ・毛穴があるか」の分析結果は共通で、変わるのは点数だけ** という点です。
 
 :::message alert
 この記事は [Zennfes Spring 2026「YouCam APIを活用した実装事例とアイデア」](https://zenn.dev/contests/zennfes-spring-2026-perfect) への参加記事です。
@@ -63,12 +61,10 @@ YouCam API は、肌分析の結果として **測定値と表示用の点数を
 
 開発者としての使い分けはシンプルです。
 
-
-| 場面             | 使う点数        |
-| -------------- | ----------- |
-| 一般ユーザー向けアプリの画面 | `ui_score`  |
-| 内部ログ・研究・精度重視   | `raw_score` |
-
+| 場面 | 使う点数 |
+| --- | --- |
+| 一般ユーザー向けアプリの画面 | `ui_score` |
+| 内部ログ・研究・精度重視 | `raw_score` |
 
 ---
 
@@ -101,18 +97,20 @@ YouCam API は、肌分析の結果として **測定値と表示用の点数を
 
 ---
 
-## 公式サンプルでも、2つの点数には大きな差がある
+## 参考：公式ドキュメントのサンプル JSON
 
-[AI Skin Analysis リファレンス](https://docs.perfectcorp.com/reference/ai_skin_analysis) の HD サンプル JSON だけでも、差ははっきりしています。
+:::message
+以下の表は **[AI Skin Analysis リファレンス](https://docs.perfectcorp.com/reference/ai_skin_analysis) に掲載されているサンプル JSON** の値です。特定の実在人物の顔を解析した結果ではありません。あくまで「API が返しうる差の例」として読んでください。
+:::
 
+HD サンプル JSON だけでも、差ははっきりしています。
 
-| 項目                           | raw_score | ui_score | 差 (ui − raw) |
-| ---------------------------- | --------- | -------- | ------------ |
-| 鼻の毛穴 (`hd_pore.nose`)        | 29.1      | 58       | **+28.9**    |
-| 水分量 (`hd_moisture`)          | 48.7      | 70       | **+21.3**    |
-| 額のシワ (`hd_wrinkle.forehead`) | 56.0      | 67       | +11.0        |
-| ハリ (`hd_firmness`)           | 89.7      | 85       | **−4.7**     |
-
+| 項目 | raw_score | ui_score | 差 (ui − raw) |
+| --- | ---: | ---: | ---: |
+| 鼻の毛穴 (`hd_pore.nose`) | 29.1 | 58 | **+28.9** |
+| 水分量 (`hd_moisture`) | 48.7 | 70 | **+21.3** |
+| 額のシワ (`hd_wrinkle.forehead`) | 56.0 | 67 | +11.0 |
+| ハリ (`hd_firmness`) | 89.7 | 85 | **−4.7** |
 
 読み取れること:
 
@@ -134,22 +132,51 @@ Beauty Bias Lab を作る前、私は「測定値用と表示用で、別々の�
 
 > 同じ顔、同じ分析結果。変わるのは点数だけ。
 
-これはドキュメントを読むだけでは実感しにくいので、自撮り1枚で並べて見せるデモにしました。
+これはドキュメントを読むだけでは実感しにくいので、自撮り1枚で並べて見せるデモ **[Beauty Bias Lab](https://beauty-bias-lab.vercel.app/)** を作りました。
 
-### 自分の顔での一例
+---
 
+## Beauty Bias Lab で自分の顔を試した
 
+:::message
+ここから先は **私が Beauty Bias Lab に自撮り1枚をアップロードした実測結果** です。上の「公式サンプル JSON」とは別データです。
+:::
 
+### Bias Index（表示のズレ合計）の読み方
 
-| 項目     | 測定値 (raw) | 表示用 (ui) | 差        | 読み方             |
-| ------ | --------- | -------- | -------- | --------------- |
-| 目周りのシワ | 88.9      | 80       | **−8.9** | 検出は同じ。表示だけ厳しめ   |
-| 水分量    | 69.5      | 77       | **+7.5** | 検出は同じ。表示だけ良く見せる |
-| ニキビ    | 83.0      | 89       | +6.0     | 同上              |
-| シワ（全体） | 94.1      | 88       | −6.1     | 測定値が高いのに表示用を下げる |
+Beauty Bias Lab は、解析で返ってきた **全項目** について次を計算します。
 
+```
+各項目の差 = ui_score − raw_score
+Bias Index = 全項目の差を足した合計
+```
 
-14項目の **表示のズレ合計（Bias Index）** は **−19.9** でした。表示用点数が測定値より **全体的に低め** に調整されている、という1枚の顔の「表示レシート」です。
+例えば 14 項目あれば、**14 個の差を全部足した数字** が Bias Index です。肌の良し悪しそのものではなく、「この1枚の顔について、表示用点数が測定値から **合計どれだけズレているか**」の指標です。
+
+今回の結果:
+
+- **Bias Index: +28.4 点**（14 項目の差の合計）
+- **1 項目あたり平均: +2.0 点**
+- **表示を上げた項目: 6** / **下げた項目: 7**
+
+### 解析結果の要約
+
+![解析結果の要約 — 14項目でズレ、Bias Index +28.4点](images/result-summary.png)
+
+### 差が大きかった項目（抜粋）
+
+14 項目すべてを載せると長くなるので、**差の絶対値が大きかった 6 項目** だけ抜粋します。Bias Index +28.4 は、この 14 項目 **全部** の合計です（下表はその一部）。
+
+| 項目 | 測定値 (raw) | 表示用 (ui) | 差 (ui − raw) | 読み方 |
+| --- | ---: | ---: | ---: | --- |
+| 頬の毛穴 | 50.1 | 68 | **+17.9** | 気になりやすい部位。表示を大きく上げる |
+| 水分量 | 55.0 | 72 | **+17.0** | 同上 |
+| 毛穴（全体） | 62.9 | 73 | +10.1 | 同上 |
+| 目周りのシワ | 89.3 | 80 | **−9.3** | 測定値が高いのに表示用を下げる |
+| 額のシワ | 89.2 | 80 | −9.2 | 同上 |
+| シワ（全体） | 85.0 | 78 | −7.0 | 同上 |
+
+公式サンプル JSON と同じく、**気になりやすい部位（毛穴・水分）は表示を上げ、もともと測定値が高い項目（シワ）は下げる** 傾向が見えます。「常に良く見せる」だけでは説明できません。**項目によって上げたり下げたりする** — これがスクショで一目で分かります。
 
 ---
 
@@ -173,14 +200,8 @@ YouCam API の Introduction は beautify や true-to-life を謳っています�
 
 ### デモ
 
-
-
-- デモ URL: `https://YOUR_DEMO_URL`
-- リポジトリ: `https://github.com/YOUR_USER/beauty_bias`
-
-
-
-
+- **デモ URL:** [https://beauty-bias-lab.vercel.app/](https://beauty-bias-lab.vercel.app/)
+- **リポジトリ:** [https://github.com/rushhirosan/beauty_bias](https://github.com/rushhirosan/beauty_bias)
 
 自撮りをアップロードすると:
 
@@ -190,6 +211,22 @@ YouCam API の Introduction は beautify や true-to-life を謳っています�
 - **同じ分析画像** 上で「2つの見せ方」を並べた比較 UI
 
 「肌診断アプリ」ではなく、**API が点数をどう見せているかを可視化する実験ツール** です。
+
+### 画面の見どころ
+
+#### 表示を上げた項目 — 同じ検出なのに点数だけ上がる
+
+![表示を上げた項目 — 頬の毛穴 50.1→68、水分量 55.0→72](images/comparison-cheek-pores.png)
+
+![表示を上げた項目一覧 — 上げ幅の大きい順](images/items-inflated.png)
+
+#### 表示を下げた項目 — 測定値が高いのに厳しめに見せる
+
+![表示を下げた項目 — 目周りのシワ 89.3→80](images/comparison-eye-wrinkle.png)
+
+![表示を下げた項目一覧 — 下げ幅の大きい順](images/items-deflated.png)
+
+1枚目の項目カードだけ、左右に **同じ写真・同じ分析画像** を並べた比較 UI が出ます。「測定値をそのまま見せた場合」と「美容アプリが実際に見せる場合」の違いが、**顔の見た目ではなく点数だけ** で伝わるようにしています。
 
 ### 全体構成
 
@@ -216,15 +253,11 @@ sequenceDiagram
   NextAPI-->>Browser: Bias Index + 項目一覧
 ```
 
-
-
-
-| 部分     | 技術                                 | 役割                                |
-| ------ | ---------------------------------- | --------------------------------- |
-| フロント   | Next.js 15 (App Router) + React 19 | アップロード、ズレの可視化                     |
-| サーバー   | `/api/analyze`                     | API Key の隠蔽、ポーリングの集約              |
-| 外部 API | Skin Analysis v2.1                 | HD 5項目（`hd_wrinkle`, `hd_pore` 等） |
-
+| 部分 | 技術 | 役割 |
+| --- | --- | --- |
+| フロント | Next.js 15 (App Router) + React 19 | アップロード、ズレの可視化 |
+| サーバー | `/api/analyze` | API Key の隠蔽、ポーリングの集約 |
+| 外部 API | Skin Analysis v2.1 | HD 5項目（`hd_wrinkle`, `hd_pore` 等） |
 
 ---
 
@@ -233,11 +266,11 @@ sequenceDiagram
 ### API 呼び出し（4ステップ）
 
 1. File API でメタデータ POST → `file_id` + アップロード用 URL
-2. **PUT** で画像アップロード（ここを忘れると失敗）
+2. **PUT** で画像アップロード（File API の POST だけでは足りない — 詳細は「ハマったポイント」参照）
 3. Task API で `dst_actions` 指定 → `task_id`
 4. GET でポーリング、`task_status === "success"` まで待つ
 
-[https://docs.perfectcorp.com/develop/quick_start_guide](https://docs.perfectcorp.com/develop/quick_start_guide)
+[Quick Start Guide](https://docs.perfectcorp.com/develop/quick_start_guide)
 
 ```typescript
 // lib/perfectcorp.ts（抜粋）
@@ -272,13 +305,23 @@ const items = output.map((row) => ({
   rawScore: row.raw_score ?? 0,
   delta: (row.ui_score ?? 0) - (row.raw_score ?? 0),
   maskUrl: row.mask_urls?.[0] ?? null,
-})).sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
+}));
 
 const biasIndex = items.reduce((sum, i) => sum + i.delta, 0);
 // biasIndex = 全項目の (ui_score - raw_score) の合計
 ```
 
-**Bias Index（表示のズレ合計）** は「この1枚の顔について、表示用点数が測定値から合計どれだけズレているか」の指標です。肌の良し悪しそのものではありません。
+```typescript
+// components/BiasResults.tsx（抜粋）
+const inflated = items
+  .filter((i) => i.delta > 0.5)
+  .sort((a, b) => b.delta - a.delta);
+const deflated = items
+  .filter((i) => i.delta < -0.5)
+  .sort((a, b) => a.delta - b.delta);
+```
+
+**Bias Index（表示のズレ合計）** の定義は「Beauty Bias Lab で自分の顔を試した」節で説明したとおり、全項目の `(ui_score − raw_score)` の合計です。
 
 ### レスポンスの整理
 
@@ -293,7 +336,7 @@ v2.1 の JSON 出力はネスト構造（`hd_wrinkle.forehead`, `hd_pore.nose` �
 1. **結論ファースト** — 「検出は同じ、表示用点数だけズレた」を要約
 2. **測定値 → 表示用** の矢印 UI — 項目ごとに差を明示
 3. **同じ分析画像での比較** — 「測定値をそのまま見せた場合」と「美容アプリが実際に見せる場合」を並べ、**写真は同じ** であることを注釈
-4. **上げた / 下げた** でグループ分け — 調整の方向が項目によって異なることを見せる
+4. **上げた / 下げた** でグループ分け — 上げ幅・下げ幅の大きい順に並べ、調整の方向が項目によって異なることを見せる
 
 `raw_score` / `ui_score` という API のフィールド名は折りたたみ内に退避し、画面上は **測定値 / 表示用** と日本語化しています。
 
@@ -301,32 +344,47 @@ v2.1 の JSON 出力はネスト構造（`hd_wrinkle.forehead`, `hd_pore.nose` �
 
 ## ハマったポイント
 
-### dev サーバー
+YouCam Skin Analysis を初めて触るとき、ドキュメントを読んでも **File API の POST だけでは画像はアップロードされない** 点でつまずきやすいです。ここが最大のハマりどころでした。
 
-```json
-"dev": "WATCHPACK_POLLING=true next dev --hostname 127.0.0.1 --port 3000"
+### File API の POST と PUT は別処理
+
+Quick Start の流れは 4 ステップですが、実際には **「メタデータ登録」と「画像本体のアップロード」が分かれている** のがポイントです。
+
+```
+① POST /file/skin-analysis   → file_id と pre-signed URL を取得
+② PUT  pre-signed URL        → 画像バイナリを別途アップロード  ← ここを忘れると失敗
+③ POST /task/skin-analysis   → file_id を渡して解析タスク作成
+④ GET  /task/skin-analysis/{task_id}  → 完了までポーリング
 ```
 
-`.next` キャッシュ破損時は API が HTML エラーを返し、フロントで `Unexpected token '<'` になります。`rm -rf .next` して再起動。
+①だけ実行して ③ に進むと、Task API 側には `file_id` しか渡っていないのに **画像本体が S3 に存在しない** 状態になります。エラーメッセージも分かりにくく、「API Key は合っているのに動かない」という症状になりがちです。
 
-### 環境変数
+Beauty Bias Lab では、PUT を明示的に分けています。
 
-```bash
-# .env.local（Next.js が読むのはこちら）
-PERFECTCORP_API_KEY=sk-...
+```typescript
+// lib/perfectcorp.ts（抜粋）
+const { fileId, uploadUrl, uploadHeaders } = await initFileUpload(
+  apiKey, fileName, contentType, buffer.length,
+);
+
+await uploadToPresignedUrl(uploadUrl, buffer, uploadHeaders); // ← PUT が必須
+
+const taskId = await createSkinAnalysisTask(apiKey, fileId);
 ```
 
-v2.1 s2s API は Bearer Token の **API Key のみ** で動作します。
+:::message
+pre-signed URL への PUT は **YouCam API ではなく S3 側** へのリクエストです。`Content-Type` ヘッダーを File API のレスポンスどおりに付ける必要があります。
+:::
 
-### 入力画像
+### そのほか、実装で詰まりやすい点
 
-- 正面向き・明るい照明
-- **顔が画像幅の 60% 以上**（`error_src_face_too_small` の主因）
-- HD は短辺 1080px 以上推奨
+**HD と SD の `dst_actions` は混在不可。** `hd_wrinkle` を使うなら、すべて `hd_` プレフィックスに揃えてください。
 
-### 分析時間・コスト
+**顔が小さすぎると `error_src_face_too_small`。** 正面向き・明るい照明で、顔が画像幅の 60% 以上を占める写真を使うと安定します。HD は短辺 1080px 以上推奨。
 
-30〜60秒。Route Handler に `maxDuration = 120`。HD 5項目で **1回のアップロード = 1 unit 消費**。
+**解析は 30〜60 秒かかる。** Route Handler に `maxDuration = 120` を設定し、Task API を 2 秒間隔でポーリングしています。HD 5 項目で **1 回のアップロード = 1 unit 消費** です。
+
+**API Key の渡し方。** v2.1 s2s API は Bearer Token の API Key のみで動作します。Beauty Bias Lab は **訪問者が各自の API Key を入力する方式**（Bring Your Own Key）なので、本番（Vercel）でもサーバー側にキーを置く必要はありません。ローカル開発用に `.env.local` に `PERFECTCORP_API_KEY` を置くこともできます。
 
 ---
 
@@ -334,13 +392,11 @@ v2.1 s2s API は Bearer Token の **API Key のみ** で動作します。
 
 肌分析 API が両方返してくれるからこそ、**プロダクト設計の選択** が生まれます。
 
-
-| 選択      | 意味                         |
-| ------- | -------------------------- |
-| ui のみ表示 | 公式想定どおり。ユーザーに優しい UX        |
-| raw も開示 | 透明性重視。信頼構築                 |
-| 両方表示    | Beauty Bias Lab 方式。教育・批評向け |
-
+| 選択 | 意味 |
+| --- | --- |
+| ui のみ表示 | 公式想定どおり。ユーザーに優しい UX |
+| raw も開示 | 透明性重視。信頼構築 |
+| 両方表示 | Beauty Bias Lab 方式。教育・批評向け |
 
 「AI が測った点数」と画面に出すものは **同じではない** — この API は、その事実を **データで教えてくれる** 側です。
 
@@ -349,34 +405,38 @@ v2.1 s2s API は Bearer Token の **API Key のみ** で動作します。
 ## まとめ
 
 - 肌分析 API は **1回の解析で `raw_score` と `ui_score` を同時に返す**
-- `**raw_score`** = 内部の測定値。`**ui_score**` = 画面用に調整した点数（心理的な動機づけ）
+- **raw_score** = 内部の測定値。**ui_score** = 画面用に調整した点数（心理的な動機づけ）
 - **気になる箇所の分析結果は共通**。変わるのは点数だけ
 - **ui_score は写真加工の設定値ではない**。分析と beautify は別 API
-- **Beauty Bias Lab** は、そのズレを自分の顔で確かめる可視化ツール
+- **Bias Index** = 全項目の `(ui_score − raw_score)` の合計。肌の良し悪しではなく「表示のズレ」の指標
 
 > 同じ顔、同じ分析結果。変わるのは点数だけ。
 
-ドキュメントに書いてあったことを、スクショ1枚で確かめる——それが今回の記事とデモの狙いです。
+ドキュメントに書いてあったことを、自分の顔のスクショ1枚で確かめてみてください。
+
+- **デモ:** [https://beauty-bias-lab.vercel.app/](https://beauty-bias-lab.vercel.app/)
+- **ソースコード:** [https://github.com/rushhirosan/beauty_bias](https://github.com/rushhirosan/beauty_bias)
 
 ---
 
 ## 参考リンク
 
 - [Zennfes Spring 2026 / YouCam API コンテスト](https://zenn.dev/contests/zennfes-spring-2026-perfect)
+- [Beauty Bias Lab（デモ）](https://beauty-bias-lab.vercel.app/)
+- [Beauty Bias Lab リポジトリ](https://github.com/rushhirosan/beauty_bias)
 - [YouCam API Developer Guide](https://docs.perfectcorp.com/develop/introduction)
 - [AI Skin Analysis リファレンス](https://docs.perfectcorp.com/reference/ai_skin_analysis)
 - [Quick Start Guide](https://docs.perfectcorp.com/develop/quick_start_guide)
 - [Build a Skincare App Using Claude and YouCam Skin Analysis API](https://www.perfectcorp.com/business/blog/ai-skincare/skin-analysis-api-claude-mcp-integration)（ui / raw の使い分け解説）
-- [Beauty Bias Lab リポジトリ](https://github.com/YOUR_USER/beauty_bias) 
 
 ---
 
 ## 公開前チェックリスト
 
-- [ ] デモ URL をデプロイ（Vercel 推奨）してリンク差し替え
-- [ ] GitHub リポジトリを public にしてリンク差し替え
-- [ ] 自撮り結果スクショを2〜3枚挿入（**公開してよい画像のみ**）
-- [ ] 記事末尾の `YOUR_USER` / `YOUR_DEMO_URL` を置換
+- [x] デモ URL をデプロイしてリンク差し替え
+- [x] GitHub リポジトリを public にしてリンク差し替え
+- [x] 自撮り結果スクショを挿入（`docs/images/` に保存済み）
+- [ ] Zenn エディタに画像をアップロード（`docs/images/*.png` をドラッグ&ドrop）
 - [ ] Zenn 公開後、「コンテストに応募する」から本テーマを選択
 
 ---
@@ -386,19 +446,3 @@ v2.1 s2s API は Bearer Token の **API Key のみ** で動作します。
 1. **同じ顔、同じ分析結果。変わるのは点数だけ — YouCam 肌分析 API の ui_score と raw_score**（推奨）
 2. ui_score って何のため？ 測定値との違いを Beauty Bias Lab で確かめた
 3. 「API ドキュメントに書いてあった」── 美容 API が返す2つの点数の意味と使い分け
-
-
-
-次の記事候補  
-  
-**2位：AI-Aging-Generatorで「老化を受け入れるアプリ」**
-
-前回3位から**2位に上昇**。
-
-**実装難易度：低〜中**。Aging Generator + LLMの組み合わせで完結。顔の消去など追加処理が不要なのでAPIを正面から使い切れる。
-
-**アウトプットのクオリティ：高**。10年後・20年後・30年後の自分の画像が並ぶビジュアルは単純に強い。そこにLLMが生成した「老いた自分からの返答」テキストが乗ると、プロダクトとして完成度が高く見える。
-
-**記事の面白さ：高**。「老化を売るAPIで、老化を祝うアプリを作った」という一文で記事の芯が伝わる。アンチエイジング産業への批評がそのままプロダクトになっている構造は読まれやすい。
-
-**示唆：深い**。3つの中で最もエモーショナルな体験を作れる。技術記事でありながら読者が自分ごとにしやすい。

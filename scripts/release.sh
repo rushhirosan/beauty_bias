@@ -27,16 +27,14 @@ while [[ $# -gt 0 ]]; do
       DO_PUSH=true
       shift
       ;;
-    --deploy)
-      echo "WARN: --deploy is ignored. Push to main triggers Vercel via GitHub integration."
-      shift
-      ;;
     -h|--help)
       cat <<EOF
 Usage: $0 [--ship | --commit MSG [--push]]
 
   (no args)   npm run build + secret scan
-  --ship      checks → auto commit → push origin main (Vercel deploys from GitHub)
+  --ship      checks → auto commit → push origin main
+
+Deploy: Vercel GitHub 連携（push to main で自動デプロイ）。CLI / vercel login は不要。
 EOF
       exit 0
       ;;
@@ -149,7 +147,7 @@ if [[ "$DO_PUSH" == true ]]; then
   else
     echo "==> git push origin main"
     git push origin main
-    echo "==> Vercel will deploy from GitHub (main). Check: https://vercel.com/dashboard"
+    echo "==> GitHub 連携で Vercel が自動デプロイします（CLI 不要）"
   fi
 fi
 

@@ -5,6 +5,10 @@ export const metadata: Metadata = {
   title: "Beauty Bias Lab",
   description:
     "YouCam Skin Analysis API の ui_score と raw_score の乖離を可視化するツール",
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/apple-icon.svg", type: "image/svg+xml" }],
+  },
 };
 
 export default function RootLayout({
