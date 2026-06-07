@@ -1,3 +1,5 @@
+import { colors } from "@/lib/theme";
+
 export function HowItWorks() {
   const steps = [
     {
@@ -42,17 +44,18 @@ export function HowItWorks() {
 
 const styles: Record<string, React.CSSProperties> = {
   wrap: {
-    background: "linear-gradient(180deg, #1a1a22 0%, #18181b 100%)",
-    border: "1px solid #27272a",
+    background: colors.bg.page,
+    border: `1px solid ${colors.border.default}`,
     borderRadius: 16,
     padding: "24px",
     marginBottom: 32,
+    boxShadow: "0 1px 3px rgba(17, 24, 26, 0.06)",
   },
   heading: {
     margin: "0 0 20px",
     fontSize: 14,
     fontWeight: 600,
-    color: "#e4e4e7",
+    color: colors.text.primary,
   },
   steps: {
     display: "grid",
@@ -70,8 +73,8 @@ const styles: Record<string, React.CSSProperties> = {
     width: 28,
     height: 28,
     borderRadius: "50%",
-    background: "#7c3aed33",
-    color: "#c4b5fd",
+    background: colors.brand.light,
+    color: colors.brand.primary,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -82,25 +85,25 @@ const styles: Record<string, React.CSSProperties> = {
     margin: "0 0 4px",
     fontSize: 14,
     fontWeight: 600,
-    color: "#fafafa",
+    color: colors.text.primary,
   },
   stepBody: {
     margin: 0,
     fontSize: 13,
-    color: "#a1a1aa",
+    color: colors.text.secondary,
     lineHeight: 1.5,
   },
   note: {
     margin: 0,
     padding: "12px 14px",
-    background: "#0f0f12",
+    background: colors.brand.light,
     borderRadius: 8,
     fontSize: 13,
-    color: "#71717a",
+    color: colors.text.secondary,
     lineHeight: 1.6,
   },
   strong: {
-    color: "#f472b6",
+    color: colors.accent.cyan,
     fontWeight: 600,
   },
 };

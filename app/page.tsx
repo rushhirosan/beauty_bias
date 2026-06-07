@@ -11,6 +11,7 @@ import { ApiKeyField } from "@/components/ApiKeyField";
 import { BiasResults } from "@/components/BiasResults";
 import { HowItWorks } from "@/components/HowItWorks";
 import { readJsonResponse } from "@/lib/fetchJson";
+import { colors } from "@/lib/theme";
 
 type Phase = "idle" | "loading" | "done" | "error";
 
@@ -164,20 +165,22 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 13,
     letterSpacing: "0.12em",
     textTransform: "uppercase",
-    color: "#a78bfa",
+    color: colors.brand.primary,
+    fontWeight: 600,
   },
   title: {
     margin: "0 0 16px",
     fontSize: "clamp(1.75rem, 4vw, 2.25rem)",
     fontWeight: 700,
     lineHeight: 1.3,
+    color: colors.text.primary,
   },
   accent: {
-    color: "#f472b6",
+    color: colors.accent.cyan,
   },
   lead: {
     margin: 0,
-    color: "#a1a1aa",
+    color: colors.text.secondary,
     fontSize: 15,
     lineHeight: 1.7,
   },
@@ -189,25 +192,25 @@ const styles: Record<string, React.CSSProperties> = {
     marginBottom: 32,
   },
   primaryBtn: {
-    background: "linear-gradient(135deg, #7c3aed, #db2777)",
+    background: colors.brand.primary,
     color: "#fff",
     border: "none",
-    borderRadius: 8,
+    borderRadius: 999,
     padding: "14px 28px",
     fontWeight: 600,
     fontSize: 16,
   },
   secondaryBtn: {
-    background: "transparent",
-    color: "#a1a1aa",
-    border: "1px solid #3f3f46",
-    borderRadius: 8,
+    background: colors.bg.page,
+    color: colors.brand.primary,
+    border: `1px solid ${colors.brand.primary}`,
+    borderRadius: 999,
     padding: "10px 20px",
   },
   hint: {
     margin: 0,
     fontSize: 13,
-    color: "#71717a",
+    color: colors.text.muted,
   },
   loadingBox: {
     display: "flex",
@@ -217,17 +220,17 @@ const styles: Record<string, React.CSSProperties> = {
   progress: {
     margin: 0,
     fontSize: 14,
-    color: "#a78bfa",
+    color: colors.brand.primary,
   },
   loadingPreview: {
     maxWidth: 160,
     borderRadius: 10,
-    border: "1px solid #27272a",
-    opacity: 0.7,
+    border: `1px solid ${colors.border.default}`,
+    opacity: 0.85,
   },
   error: {
     margin: 0,
-    color: "#f87171",
+    color: colors.semantic.error,
     fontSize: 14,
   },
 };

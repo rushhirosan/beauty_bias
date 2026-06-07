@@ -1,5 +1,7 @@
 "use client";
 
+import { colors } from "@/lib/theme";
+
 type Props = {
   value: string;
   onChange: (value: string) => void;
@@ -50,27 +52,27 @@ const styles: Record<string, React.CSSProperties> = {
   label: {
     fontSize: 13,
     fontWeight: 600,
-    color: "#e4e4e7",
+    color: colors.text.primary,
   },
   input: {
     width: "100%",
     boxSizing: "border-box",
     padding: "12px 14px",
     borderRadius: 8,
-    border: "1px solid #3f3f46",
-    background: "#18181b",
-    color: "#fafafa",
+    border: `1px solid ${colors.border.strong}`,
+    background: colors.bg.page,
+    color: colors.text.primary,
     fontSize: 14,
     fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
   },
   hint: {
     margin: 0,
     fontSize: 12,
-    color: "#71717a",
+    color: colors.text.muted,
     lineHeight: 1.6,
   },
   link: {
-    color: "#a78bfa",
+    color: colors.brand.primary,
     marginLeft: 4,
   },
 };

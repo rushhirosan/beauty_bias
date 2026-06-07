@@ -2,6 +2,7 @@ import type { AnalysisResult, SkinScoreItem } from "@/lib/types";
 import { describeOverallBias } from "@/lib/display";
 import { HowItWorks } from "@/components/HowItWorks";
 import { ScoreCard } from "@/components/ScoreCard";
+import { colors } from "@/lib/theme";
 
 interface Props {
   result: AnalysisResult;
@@ -84,12 +85,12 @@ export function BiasResults({ result, sourcePreview }: Props) {
           </div>
           <div style={{ ...styles.statCard, ...styles.statCardUp }}>
             <p style={styles.statLabel}>表示を上げた</p>
-            <p style={{ ...styles.statValue, color: "#4ade80" }}>{inflated.length}</p>
+            <p style={{ ...styles.statValue, color: colors.semantic.success }}>{inflated.length}</p>
             <p style={styles.statSub}>項目</p>
           </div>
           <div style={{ ...styles.statCard, ...styles.statCardDown }}>
             <p style={styles.statLabel}>表示を下げた</p>
-            <p style={{ ...styles.statValue, color: "#f87171" }}>{deflated.length}</p>
+            <p style={{ ...styles.statValue, color: colors.semantic.error }}>{deflated.length}</p>
             <p style={styles.statSub}>項目</p>
           </div>
         </div>
@@ -133,8 +134,8 @@ const styles: Record<string, React.CSSProperties> = {
     marginTop: 8,
   },
   verdict: {
-    background: "linear-gradient(135deg, #1e1b4b 0%, #18181b 60%)",
-    border: "1px solid #3730a3",
+    background: `linear-gradient(135deg, ${colors.brand.light} 0%, ${colors.bg.page} 60%)`,
+    border: `1px solid ${colors.border.selected}33`,
     borderRadius: 16,
     padding: "28px 28px 24px",
     marginBottom: 24,
@@ -144,42 +145,44 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 12,
     letterSpacing: "0.08em",
     textTransform: "uppercase",
-    color: "#a78bfa",
+    color: colors.brand.primary,
+    fontWeight: 600,
   },
   verdictTitle: {
     margin: "0 0 12px",
     fontSize: "clamp(1.25rem, 3vw, 1.5rem)",
     fontWeight: 700,
     lineHeight: 1.4,
+    color: colors.text.primary,
   },
   verdictAccent: {
-    color: "#f472b6",
+    color: colors.accent.cyan,
   },
   verdictBody: {
     margin: "0 0 20px",
-    color: "#a1a1aa",
+    color: colors.text.secondary,
     fontSize: 15,
     maxWidth: 640,
     lineHeight: 1.6,
   },
   highlight: {
-    background: "#0f0f12",
+    background: colors.bg.page,
     borderRadius: 10,
     padding: "14px 16px",
     marginBottom: 20,
-    border: "1px solid #27272a",
+    border: `1px solid ${colors.border.default}`,
   },
   highlightLabel: {
     margin: "0 0 6px",
     fontSize: 11,
-    color: "#71717a",
+    color: colors.text.muted,
     textTransform: "uppercase",
     letterSpacing: "0.06em",
   },
   highlightText: {
     margin: 0,
     fontSize: 15,
-    color: "#e4e4e7",
+    color: colors.text.primary,
   },
   stats: {
     display: "grid",
@@ -187,32 +190,32 @@ const styles: Record<string, React.CSSProperties> = {
     gap: 12,
   },
   statCard: {
-    background: "#0f0f12",
+    background: colors.bg.page,
     borderRadius: 10,
     padding: "16px",
-    border: "1px solid #27272a",
+    border: `1px solid ${colors.border.default}`,
   },
   statCardUp: {
-    borderColor: "#4ade8033",
+    borderColor: colors.semantic.successBorder,
   },
   statCardDown: {
-    borderColor: "#f8717133",
+    borderColor: colors.semantic.errorBorder,
   },
   statLabel: {
     margin: "0 0 6px",
     fontSize: 12,
-    color: "#71717a",
+    color: colors.text.muted,
   },
   statValue: {
     margin: 0,
     fontSize: 28,
     fontWeight: 700,
-    color: "#fafafa",
+    color: colors.text.primary,
   },
   statSub: {
     margin: "6px 0 0",
     fontSize: 12,
-    color: "#52525b",
+    color: colors.text.muted,
   },
   section: {
     marginBottom: 40,
@@ -224,11 +227,12 @@ const styles: Record<string, React.CSSProperties> = {
     margin: "0 0 6px",
     fontSize: 20,
     fontWeight: 700,
+    color: colors.text.primary,
   },
   sectionSub: {
     margin: 0,
     fontSize: 14,
-    color: "#71717a",
+    color: colors.text.muted,
   },
   grid: {
     display: "flex",
@@ -238,13 +242,13 @@ const styles: Record<string, React.CSSProperties> = {
   meta: {
     marginTop: 16,
     fontSize: 12,
-    color: "#52525b",
+    color: colors.text.muted,
   },
   metaCode: {
     display: "block",
     marginTop: 8,
     fontSize: 11,
     wordBreak: "break-all",
-    color: "#52525b",
+    color: colors.text.muted,
   },
 };

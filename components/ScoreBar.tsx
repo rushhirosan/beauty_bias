@@ -1,3 +1,5 @@
+import { colors } from "@/lib/theme";
+
 interface Props {
   rawScore: number;
   uiScore: number;
@@ -23,7 +25,7 @@ export function ScoreBar({ rawScore, uiScore, delta }: Props) {
               ...styles.gap,
               left: `${rawPct}%`,
               width: `${Math.max(uiPct - rawPct, 0.5)}%`,
-              background: isUp ? "#4ade8033" : "#f8717133",
+              background: isUp ? colors.semantic.successBg : colors.semantic.errorBg,
             }}
           />
         ) : (
@@ -32,26 +34,34 @@ export function ScoreBar({ rawScore, uiScore, delta }: Props) {
               ...styles.gap,
               left: `${uiPct}%`,
               width: `${Math.max(rawPct - uiPct, 0.5)}%`,
-              background: isUp ? "#4ade8033" : "#f8717133",
+              background: isUp ? colors.semantic.successBg : colors.semantic.errorBg,
             }}
           />
         )}
         <div
-          style={{ ...styles.marker, left: `${rawPct}%`, background: "#60a5fa" }}
+          style={{
+            ...styles.marker,
+            left: `${rawPct}%`,
+            background: colors.score.raw,
+          }}
           title={`測定値 ${rawScore.toFixed(1)}`}
         />
         <div
-          style={{ ...styles.marker, left: `${uiPct}%`, background: "#f472b6" }}
+          style={{
+            ...styles.marker,
+            left: `${uiPct}%`,
+            background: colors.score.ui,
+          }}
           title={`表示用 ${uiScore}`}
         />
       </div>
       <div style={styles.legend}>
         <span style={styles.legendItem}>
-          <span style={{ ...styles.dot, background: "#60a5fa" }} />
+          <span style={{ ...styles.dot, background: colors.score.raw }} />
           測定値 {rawScore.toFixed(1)}
         </span>
         <span style={styles.legendItem}>
-          <span style={{ ...styles.dot, background: "#f472b6" }} />
+          <span style={{ ...styles.dot, background: colors.score.ui }} />
           表示用 {uiScore}
         </span>
       </div>
@@ -67,14 +77,14 @@ const styles: Record<string, React.CSSProperties> = {
     display: "flex",
     justifyContent: "space-between",
     fontSize: 10,
-    color: "#52525b",
+    color: colors.text.muted,
     marginBottom: 4,
     padding: "0 2px",
   },
   track: {
     position: "relative",
     height: 10,
-    background: "#27272a",
+    background: colors.border.default,
     borderRadius: 999,
   },
   gap: {
@@ -90,7 +100,7 @@ const styles: Record<string, React.CSSProperties> = {
     height: 16,
     borderRadius: 2,
     transform: "translateX(-50%)",
-    boxShadow: "0 0 0 2px #18181b",
+    boxShadow: `0 0 0 2px ${colors.bg.page}`,
   },
   legend: {
     display: "flex",
@@ -98,7 +108,7 @@ const styles: Record<string, React.CSSProperties> = {
     gap: 16,
     marginTop: 10,
     fontSize: 12,
-    color: "#a1a1aa",
+    color: colors.text.secondary,
   },
   legendItem: {
     display: "flex",

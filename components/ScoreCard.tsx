@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { SkinScoreItem } from "@/lib/types";
 import { describeItemBias, biasDirectionLabel } from "@/lib/display";
 import { ScoreBar } from "@/components/ScoreBar";
+import { colors } from "@/lib/theme";
 
 interface Props {
   item: SkinScoreItem;
@@ -21,7 +22,11 @@ export function ScoreCard({ item, sourcePreview, compact = false }: Props) {
     <article
       style={{
         ...styles.card,
-        borderLeftColor: isUp ? "#4ade80" : item.delta < -0.5 ? "#f87171" : "#52525b",
+        borderLeftColor: isUp
+          ? colors.semantic.success
+          : item.delta < -0.5
+            ? colors.semantic.error
+            : colors.text.muted,
       }}
     >
       <div style={styles.cardHeader}>
@@ -33,8 +38,8 @@ export function ScoreCard({ item, sourcePreview, compact = false }: Props) {
           <span
             style={{
               ...styles.badge,
-              background: isUp ? "#4ade8022" : "#f8717122",
-              color: isUp ? "#86efac" : "#fca5a5",
+              background: isUp ? colors.semantic.successBg : colors.semantic.errorBg,
+              color: isUp ? colors.semantic.success : colors.semantic.error,
             }}
           >
             {direction}
@@ -45,7 +50,7 @@ export function ScoreCard({ item, sourcePreview, compact = false }: Props) {
       <div style={styles.shiftRow}>
         <div style={styles.scoreBox}>
           <span style={styles.scoreBoxLabel}>測定値</span>
-          <span style={{ ...styles.scoreBoxValue, color: "#60a5fa" }}>
+          <span style={{ ...styles.scoreBoxValue, color: colors.score.raw }}>
             {item.rawScore.toFixed(1)}
           </span>
         </div>
@@ -54,8 +59,16 @@ export function ScoreCard({ item, sourcePreview, compact = false }: Props) {
           <span
             style={{
               ...styles.deltaChip,
-              color: isUp ? "#4ade80" : item.delta < -0.5 ? "#f87171" : "#a1a1aa",
-              borderColor: isUp ? "#4ade8044" : item.delta < -0.5 ? "#f8717144" : "#3f3f46",
+              color: isUp
+                ? colors.semantic.success
+                : item.delta < -0.5
+                  ? colors.semantic.error
+                  : colors.text.secondary,
+              borderColor: isUp
+                ? colors.semantic.successBorder
+                : item.delta < -0.5
+                  ? colors.semantic.errorBorder
+                  : colors.border.strong,
             }}
           >
             {item.delta > 0 ? "+" : ""}
@@ -66,7 +79,7 @@ export function ScoreCard({ item, sourcePreview, compact = false }: Props) {
 
         <div style={{ ...styles.scoreBox, ...styles.scoreBoxUi }}>
           <span style={styles.scoreBoxLabel}>表示用</span>
-          <span style={{ ...styles.scoreBoxValue, color: "#f472b6" }}>
+          <span style={{ ...styles.scoreBoxValue, color: colors.score.ui }}>
             {item.uiScore}
           </span>
         </div>
@@ -85,8 +98,8 @@ export function ScoreCard({ item, sourcePreview, compact = false }: Props) {
               title="測定値をそのまま見せた場合"
               sub="API内部 (raw_score)"
               score={item.rawScore.toFixed(1)}
-              scoreColor="#60a5fa"
-              borderColor="#60a5fa55"
+              scoreColor={colors.score.raw}
+              borderColor={`${colors.score.raw}55`}
               source={sourcePreview}
               maskUrl={item.maskUrl}
               showMask={showMask}
@@ -101,8 +114,8 @@ export function ScoreCard({ item, sourcePreview, compact = false }: Props) {
               title="美容アプリが実際に見せる"
               sub="表示用 (ui_score)"
               score={String(item.uiScore)}
-              scoreColor="#f472b6"
-              borderColor="#f472b655"
+              scoreColor={colors.score.ui}
+              borderColor={`${colors.score.ui}55`}
               source={sourcePreview}
               maskUrl={item.maskUrl}
               showMask={showMask}
@@ -182,11 +195,12 @@ function AppMockPanel({
 
 const styles: Record<string, React.CSSProperties> = {
   card: {
-    background: "#18181b",
-    border: "1px solid #27272a",
+    background: colors.bg.page,
+    border: `1px solid ${colors.border.default}`,
     borderLeftWidth: 4,
     borderRadius: 12,
     padding: "20px 24px",
+    boxShadow: "0 1px 3px rgba(17, 24, 26, 0.06)",
   },
   cardHeader: {
     display: "flex",
@@ -199,12 +213,12 @@ const styles: Record<string, React.CSSProperties> = {
     margin: "0 0 6px",
     fontSize: 17,
     fontWeight: 700,
-    color: "#fafafa",
+    color: colors.text.primary,
   },
   insight: {
     margin: 0,
     fontSize: 14,
-    color: "#a1a1aa",
+    color: colors.text.secondary,
     lineHeight: 1.5,
     maxWidth: 520,
   },
@@ -223,19 +237,19 @@ const styles: Record<string, React.CSSProperties> = {
   },
   scoreBox: {
     flex: 1,
-    background: "#0f0f12",
+    background: colors.brand.light,
     borderRadius: 10,
     padding: "14px 16px",
-    border: "1px solid #27272a",
+    border: `1px solid ${colors.border.default}`,
   },
   scoreBoxUi: {
-    borderColor: "#f472b633",
-    background: "#f472b608",
+    borderColor: `${colors.score.ui}33`,
+    background: `${colors.score.ui}08`,
   },
   scoreBoxLabel: {
     display: "block",
     fontSize: 11,
-    color: "#71717a",
+    color: colors.text.muted,
     marginBottom: 4,
     letterSpacing: "0.04em",
   },
@@ -261,17 +275,17 @@ const styles: Record<string, React.CSSProperties> = {
   },
   arrow: {
     fontSize: 20,
-    color: "#52525b",
+    color: colors.text.muted,
   },
   maskSection: {
     marginTop: 24,
     paddingTop: 24,
-    borderTop: "1px solid #27272a",
+    borderTop: `1px solid ${colors.border.default}`,
   },
   maskHeading: {
     margin: "0 0 16px",
     fontSize: 14,
-    color: "#d4d4d8",
+    color: colors.text.primary,
     lineHeight: 1.5,
   },
   compareRow: {
@@ -293,24 +307,24 @@ const styles: Record<string, React.CSSProperties> = {
     width: 36,
     height: 36,
     borderRadius: "50%",
-    background: "#27272a",
-    border: "2px solid #52525b",
+    background: colors.brand.light,
+    border: `2px solid ${colors.border.strong}`,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     fontSize: 20,
     fontWeight: 700,
-    color: "#a1a1aa",
+    color: colors.text.secondary,
   },
   equalsText: {
     fontSize: 11,
-    color: "#71717a",
+    color: colors.text.muted,
     textAlign: "center",
     lineHeight: 1.3,
     maxWidth: 48,
   },
   mockPanel: {
-    background: "#0f0f12",
+    background: colors.bg.subtle,
     border: "2px solid",
     borderRadius: 12,
     overflow: "hidden",
@@ -324,13 +338,13 @@ const styles: Record<string, React.CSSProperties> = {
     margin: "0 0 2px",
     fontSize: 12,
     fontWeight: 600,
-    color: "#e4e4e7",
+    color: colors.text.primary,
     lineHeight: 1.4,
   },
   mockSub: {
     margin: 0,
     fontSize: 11,
-    color: "#71717a",
+    color: colors.text.muted,
   },
   mockScore: {
     margin: "10px 14px 12px",
@@ -350,21 +364,21 @@ const styles: Record<string, React.CSSProperties> = {
   samePhotoNote: {
     margin: "14px 0 0",
     padding: "12px 14px",
-    background: "#fbbf2414",
-    border: "1px solid #fbbf2433",
+    background: colors.semantic.warningBg,
+    border: `1px solid ${colors.semantic.warningBorder}`,
     borderRadius: 8,
     fontSize: 13,
-    color: "#a1a1aa",
+    color: colors.text.secondary,
     lineHeight: 1.6,
   },
   strong: {
-    color: "#fcd34d",
+    color: colors.accent.teal,
     fontWeight: 600,
   },
   overlayFrame: {
     position: "relative",
     aspectRatio: "4/3",
-    background: "#09090b",
+    background: colors.bg.muted,
     marginTop: "auto",
   },
   baseImg: {
@@ -387,18 +401,18 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: "center",
     gap: 8,
     fontSize: 13,
-    color: "#71717a",
+    color: colors.text.muted,
     marginTop: 12,
     cursor: "pointer",
   },
   details: {
     marginTop: 16,
     fontSize: 12,
-    color: "#52525b",
+    color: colors.text.muted,
   },
   detailsSummary: {
     cursor: "pointer",
-    color: "#52525b",
+    color: colors.text.muted,
   },
   detailsBody: {
     margin: "8px 0 0",
