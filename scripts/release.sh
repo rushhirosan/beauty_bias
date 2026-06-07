@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Beauty Bias Lab — release checks → optional commit → push → Vercel deploy
+# Beauty Bias Lab — release checks → optional commit → push
+# Production deploy is handled by Vercel GitHub integration (push to main).
 #
 #   ./scripts/release.sh
 #   ./scripts/release.sh --ship
@@ -10,7 +11,6 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
 COMMIT_MSG=""
-DO_DEPLOY=false
 DO_PUSH=false
 DO_SHIP=false
 
@@ -21,20 +21,22 @@ while [[ $# -gt 0 ]]; do
       if [[ -z "$COMMIT_MSG" ]]; then echo "error: --commit needs a message"; exit 1; fi
       shift 2
       ;;
-    --deploy) DO_DEPLOY=true; shift ;;
     --push) DO_PUSH=true; shift ;;
     --ship)
       DO_SHIP=true
-      DO_DEPLOY=true
       DO_PUSH=true
+      shift
+      ;;
+    --deploy)
+      echo "WARN: --deploy is ignored. Push to main triggers Vercel via GitHub integration."
       shift
       ;;
     -h|--help)
       cat <<EOF
-Usage: $0 [--ship | --commit MSG [--push] [--deploy]]
+Usage: $0 [--ship | --commit MSG [--push]]
 
   (no args)   npm run build + secret scan
-  --ship      checks → auto commit → push origin main → vercel --prod
+  --ship      checks → auto commit → push origin main (Vercel deploys from GitHub)
 EOF
       exit 0
       ;;
@@ -147,12 +149,8 @@ if [[ "$DO_PUSH" == true ]]; then
   else
     echo "==> git push origin main"
     git push origin main
+    echo "==> Vercel will deploy from GitHub (main). Check: https://vercel.com/dashboard"
   fi
-fi
-
-if [[ "$DO_DEPLOY" == true ]]; then
-  echo "==> Vercel production deploy"
-  npx vercel --prod --yes
 fi
 
 echo "OK: release complete"
