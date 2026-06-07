@@ -44,10 +44,14 @@ function ItemSection({
 
 export function BiasResults({ result, sourcePreview }: Props) {
   const { items, biasIndex, averageDelta, taskId } = result;
-  const inflated = items.filter((i) => i.delta > 0.5);
-  const deflated = items.filter((i) => i.delta < -0.5);
+  const inflated = items
+    .filter((i) => i.delta > 0.5)
+    .sort((a, b) => b.delta - a.delta);
+  const deflated = items
+    .filter((i) => i.delta < -0.5)
+    .sort((a, b) => a.delta - b.delta);
   const neutral = items.filter((i) => Math.abs(i.delta) <= 0.5);
-  const topItem = items[0];
+  const topItem = [...items].sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta))[0];
   const overallText = describeOverallBias(biasIndex, inflated.length, deflated.length);
 
   return (
@@ -99,16 +103,16 @@ export function BiasResults({ result, sourcePreview }: Props) {
       <HowItWorks />
 
       <ItemSection
-        title="表示を下げた項目"
-        subtitle="測定値より表示用スコアが低い — 同じ検出なのに、アプリ上は厳しめに見える"
-        items={deflated}
+        title="表示を上げた項目"
+        subtitle="測定値より表示用スコアが高い — 同じ検出なのに、アプリ上は良く見える"
+        items={inflated}
         sourcePreview={sourcePreview}
       />
 
       <ItemSection
-        title="表示を上げた項目"
-        subtitle="測定値より表示用スコアが高い — 同じ検出なのに、アプリ上は良く見える"
-        items={inflated}
+        title="表示を下げた項目"
+        subtitle="測定値より表示用スコアが低い — 同じ検出なのに、アプリ上は厳しめに見える"
+        items={deflated}
         sourcePreview={sourcePreview}
       />
 
